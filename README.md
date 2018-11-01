@@ -13,12 +13,26 @@ npm start
 
 The app will use port 3000 by default so browse to `http://localhost:3000`
 
+## Docker
+
+Alternatively run everything in docker
+
+```sh
+docker build -t <user>/dazn .
+docker run -d --name dazn_redis redis
+docker run -d -p 3000:3000 --link dazn_redis:redis <user>/dazn
+```
+
 ## Endpoints
 
-GET /:userId - List the streams for a given user
-POST /:userId - Create a stream with a generated UUID
-PUT /:userId/:streamId - Create a stream with a provided ID
-DELETE /:userId/:streamId - Delete a stream by ID
+### GET /:userId
+List the streams for a given user
+### POST /:userId
+Create a stream with a generated UUID
+### PUT /:userId/:streamId
+Create a stream with a provided ID
+### DELETE /:userId/:streamId
+Delete a stream by ID
 
 ## Scalability strategy
 
