@@ -1,8 +1,8 @@
 const assert = require('assert');
-const redisMock = require('../redisMock');
+const redisMock = require('./redisMock');
 
 var config = {redisPrefix: "", maxConcurrency: 3};
-const redisMng = require('../redis')(config, redisMock);
+const redisMng = require('../app/redis')(config, redisMock);
 
 describe('Stream Manager', () => {
     describe('createStream', () => {

@@ -1,5 +1,9 @@
 {
     "port": 3000,
     "redisPrefix": "stream:",
-    "maxConcurrency": 3
+    "maxConcurrency": 3,
+    "redis": {
+        "host": "127.0.0.1",
+        "post": 6379
+    }
 }
