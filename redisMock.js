@@ -9,7 +9,7 @@ function getData(key) {
 
 module.exports = {
     scard: (key) => {
-        return getData(key).length;
+        return Object.keys(getData(key)).length;
     },
     sadd: (key, val) => {
         getData(key)[val] = 1;
@@ -22,5 +22,8 @@ module.exports = {
         var exists = val in getData(key);
         delete getData(key)[val];
         return exists;
+    },
+    setState: (key, vals) => {
+        map[key] = vals.reduce((res, cur) => { res[cur] = 1; return res; }, {});
     }
 };
