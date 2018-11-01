@@ -7,12 +7,12 @@ const express = require('express');
 
 async.auto({
     redis: (callback) => {
-        callback(redis.createClient());
+        callback(null, redis.createClient());
     },
     redisMng: ['redis', (results, callback) => {
-        callback(require('./redis')(config, results.redis, uuid));
-    }]
+        callback(null, require('./redis')(config, results.redis, uuid));
+    }],
     app: ['redisMng', (results, callback) => {
-        callback(require('./app')(config, express, results.redisMng));
+        callback(null, require('./app')(config, express, results.redisMng));
     }]
 });
