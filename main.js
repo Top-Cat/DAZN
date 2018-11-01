@@ -1,26 +1,37 @@
 const config = require('./config.json');
+const TEST_USER = 'User1';
 
-const redis = require('redis');
-const redisMS = require('redis-mutex-semaphore');
+const uuid = require('uuid/v4');
+const redis = require('async-redis');
 const redisClient = redis.createClient();
 
-redisClient.on('connect', function() {
+redisClient.on('connect', async function() {
     console.log('Redis client connected');
-});
 
-var redisSemaphoreFactory = redisMS(redisClient);
+    console.log(await createStream(TEST_USER));
+    var streams = await getStreams(TEST_USER);
 
-var semaphore = redisSemaphoreFactory.getSemaphoreClient('User1', 3);
-
-semaphore.get((err, result) => {
-    try {
-        if (err && err.code == 'ENOTFOUNDKEY') {
-            semaphore.reset();
+    console.log(streams);
+    if (streams.length > 2) {
+        for (x in streams) {
+            deleteStream(TEST_USER, streams[x]);
         }
-        console.log(err, result);
-    } finally {
-        semaphore.rel((err, result) => {
-            console.log(err, result);
-        });
     }
 });
+
+async function createStream(userId, streamId = uuid()) {
+    var streamCount = await redisClient.scard(config.redisPrefix + userId);
+
+    if (streamCount >= config.maxConcurrency) { return false; }
+
+    await redisClient.sadd(config.redisPrefix + userId, streamId);
+    return true;
+}
+
+async function getStreams(userId) {
+    return redisClient.smembers(config.redisPrefix + userId);
+}
+
+async function deleteStream(userId, streamId) {
+    await redisClient.srem(config.redisPrefix + userId, streamId);
+}
